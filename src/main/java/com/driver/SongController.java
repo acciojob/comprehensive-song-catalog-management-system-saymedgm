@@ -8,37 +8,55 @@ public class SongController {
     private List<Artist> artists = new ArrayList<>();
 
     public void addSong(String title, String artist, int year) {
-    	//your code goes here
+        Song song = new Song(title, artist, year);
+        songs.add(song);
+
+        // If the artist does not exist, add the artist
+        if (!artistExists(artist)) {
+            artists.add(new Artist(artist, 1));
+        } else {
+            incrementAlbumCount(artist);
+        }
     }
 
     public List<Song> getAllSongs() {
-    	//your code goes here
         return new ArrayList<>(songs);
     }
 
     public List<Artist> getAllArtists() {
-    	//your code goes here
         return new ArrayList<>(artists);
     }
 
     public void deleteSong(String title) {
-    	//your code goes here
+        songs.removeIf(song -> song.getTitle().equalsIgnoreCase(title));
     }
 
     public Song getSongDetails(String title) {
-    	//your code goes here
+        for (Song song : songs) {
+            if (song.getTitle().equalsIgnoreCase(title)) {
+                return song;
+            }
+        }
+        return null;
     }
 
     public double calculateAverageAlbums() {
-    	//your code goes here
+        if (artists.isEmpty()) {
+            return 0.0;
+        }
+
+        int totalAlbums = artists.stream().mapToInt(Artist::getNumOfAlbums).sum();
+        return (double) totalAlbums / artists.size();
     }
 
     private boolean artistExists(String artistName) {
-    	//your code goes here
+        return artists.stream().anyMatch(artist -> artist.getName().equalsIgnoreCase(artistName));
     }
 
     private void incrementAlbumCount(String artistName) {
-    	//your code goes here
+        artists.stream()
+                .filter(artist -> artist.getName().equalsIgnoreCase(artistName))
+                .findFirst()
+                .ifPresent(Artist::incrementAlbumCount);
     }
 }
-
